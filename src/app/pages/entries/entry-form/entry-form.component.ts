@@ -7,6 +7,8 @@ import { EntryService } from "../shared/entry.service";
 
 import { switchMap } from "rxjs/operators";
 import toastr from "toastr";
+import { Category } from "../../categories/shared/category-model";
+import { CategoryService } from "../../categories/shared/category.service";
 
 @Component({
   selector: 'app-entry-form',
@@ -22,6 +24,8 @@ export class EntryFormComponent implements OnInit {
   serverErrorMessages: string[]=null;
   submittingForm: boolean = false;
   entry: Entry = new Entry();
+  categories: Array<Category>;
+  
 
   ptBR = {
     firstDayOfWeek: 0,
@@ -50,7 +54,8 @@ export class EntryFormComponent implements OnInit {
     private entryService: EntryService,
     private route: ActivatedRoute,
     private router: Router,
-    private formBuilder: FormBuilder 
+    private formBuilder: FormBuilder ,
+    private categoryService: CategoryService
   ) { }
 
   ngOnInit() {
@@ -58,7 +63,7 @@ export class EntryFormComponent implements OnInit {
     this.setCurrentAction();
     this.buildEntryForm();
     this.loadEntry();
-
+    this.loadCategories();
   }
 
   ngAfterContentChecked(): void {
@@ -84,6 +89,12 @@ export class EntryFormComponent implements OnInit {
         }
       }
     )
+  }
+
+  private loadCategories(){
+    this.categoryService.getAll().subscribe(
+      categories => this.categories = categories, error => alert('Erro ao carregar Lista')
+    );
   }
 
   private createEntry(){
